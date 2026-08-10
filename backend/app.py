@@ -24,7 +24,6 @@ ALLOWED_ORIGINS = [
 ]
 
 # Add your deployed frontend origin(s) via env var, comma-separated, e.g.:
-#   FRONTEND_ORIGIN=https://waypoint-frontend.vercel.app,https://mytrip.app
 _extra_origins = os.getenv("FRONTEND_ORIGIN", "")
 ALLOWED_ORIGINS += [o.strip() for o in _extra_origins.split(",") if o.strip()]
 

@@ -24,7 +24,14 @@ export default function App() {
         body: JSON.stringify({ message: prompt, thread_id: threadId }),
       })
 
-      const data = await response.json()
+      // Some deployments may return non-JSON error pages (HTML); handle that gracefully
+      const text = await response.text()
+      let data = null
+      try {
+        data = JSON.parse(text)
+      } catch (err) {
+        throw new Error(`Invalid JSON response from API (status ${response.status}): ${text.substring(0, 200)}`)
+      }
 
       if (!response.ok || !data.success) {
         throw new Error(data.error || 'Something went wrong generating your trip plan.')

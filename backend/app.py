@@ -25,13 +25,12 @@ ALLOWED_ORIGINS = [
 
 # Add your deployed frontend origin(s) via env var (singular or plural), comma-separated, e.g.:
 _frontend_origin = os.getenv("FRONTEND_ORIGIN", "")
-combined = ",".join([s for s in (_frontend_origin) if s])
+combined = _frontend_origin
 parsed = []
 for o in combined.split(","):
     o = o.strip()
     if not o:
         continue
-
     o = o.rstrip('/')
     parsed.append(o)
 

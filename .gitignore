@@ -5,3 +5,4 @@
 frontend/.env.production
 
 frontend/.env.example
+.env

@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: tripmate-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./dockerfile
+    region: oregon
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: FRONTEND_ORIGIN
+        sync: false
+    envVarGroups:
+      - name: frontend-origin
+  - type: static
+    name: tripmate-frontend
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    region: oregon
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: tripmate-backend
+          property: url
+        sync: false

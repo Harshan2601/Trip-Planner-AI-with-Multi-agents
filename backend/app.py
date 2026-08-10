@@ -23,9 +23,35 @@ ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
-# Add your deployed frontend origin(s) via env var, comma-separated, e.g.:
-_extra_origins = os.getenv("FRONTEND_ORIGIN", "")
-ALLOWED_ORIGINS += [o.strip() for o in _extra_origins.split(",") if o.strip()]
+# Add your deployed frontend origin(s) via env var (singular or plural), comma-separated, e.g.:
+#   FRONTEND_ORIGIN=https://waypoint-frontend.vercel.app,https://mytrip.app
+#   or
+#   FRONTEND_ORIGINS=https://waypoint-frontend.vercel.app,https://mytrip.app
+_frontend_origin = os.getenv("FRONTEND_ORIGIN", "")
+_frontend_origins = os.getenv("FRONTEND_ORIGINS", "")
+combined = ",".join([s for s in (_frontend_origin, _frontend_origins) if s])
+parsed = []
+for o in combined.split(","):
+    o = o.strip()
+    if not o:
+        continue
+    # Normalize: remove trailing slash
+    o = o.rstrip('/')
+    parsed.append(o)
+
+# Also add common www variants to be forgiving for user input
+normalized = set(parsed)
+for o in list(parsed):
+    if o.startswith('https://') and not o.startswith('https://www.'):
+        normalized.add(o.replace('https://', 'https://www.'))
+    if o.startswith('http://') and not o.startswith('http://www.'):
+        normalized.add(o.replace('http://', 'http://www.'))
+
+if normalized:
+    ALLOWED_ORIGINS += sorted(normalized)
+
+# Debug: print allowed origins at startup to help diagnose CORS issues in logs
+print('ALLOWED_ORIGINS =', ALLOWED_ORIGINS)
 
 app.add_middleware(
     CORSMiddleware,

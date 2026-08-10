@@ -4,4 +4,4 @@
 # Environment files
 frontend/.env.production
 
-frontend/.env1
+frontend/.env.example

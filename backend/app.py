@@ -31,7 +31,7 @@ for o in combined.split(","):
     o = o.strip()
     if not o:
         continue
-    # Normalize: remove trailing slash
+
     o = o.rstrip('/')
     parsed.append(o)
 

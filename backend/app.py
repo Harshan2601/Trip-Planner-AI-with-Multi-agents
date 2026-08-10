@@ -14,16 +14,13 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# The React (Vite) frontend runs on its own dev server/origin. The Vite dev
-# proxy avoids needing this in local dev, but CORS is required as soon as
-# the frontend is deployed on a different origin than this API (e.g.
-# Vercel/Netlify frontend + Render/Fly backend).
+
 ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
 
-# Add your deployed frontend origin(s) via env var (singular or plural), comma-separated, e.g.:
+
 _frontend_origin = os.getenv("FRONTEND_ORIGIN", "")
 combined = _frontend_origin
 parsed = []

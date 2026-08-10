@@ -1,12 +1,6 @@
 import os 
 import certifi
 from dotenv import load_dotenv
-
-load_dotenv()
-
-os.environ["SSL_CERT_FILE"] = certifi.where()
-os.environ["REQUESTS_CA_BUNDLE"] = certifi.where()
-
 from typing import TypedDict, Annotated
 import operator
 import uuid
@@ -26,6 +20,13 @@ from langchain_core.messages import (
 from langchain_groq import ChatGroq
 from tools.tavily_tool import tavily_search
 from tools.flight_tool import search_flights
+
+
+load_dotenv()
+
+os.environ["SSL_CERT_FILE"] = certifi.where()
+os.environ["REQUESTS_CA_BUNDLE"] = certifi.where()
+
 
 
 def get_database_url():
@@ -175,9 +176,8 @@ Important:
     }
 
 
-# =========================
 # Build Graph
-# =========================
+
 
 graph = StateGraph(TravelState)
 

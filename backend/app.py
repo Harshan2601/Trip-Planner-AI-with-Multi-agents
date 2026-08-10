@@ -53,10 +53,9 @@ if normalized:
 # Debug: print allowed origins at startup to help diagnose CORS issues in logs
 print('ALLOWED_ORIGINS =', ALLOWED_ORIGINS)
 
-# TEMPORARY: permissive CORS for debugging (allows all origins). Remove or restrict before production.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

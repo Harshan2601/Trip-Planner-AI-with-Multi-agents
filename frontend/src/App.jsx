@@ -17,8 +17,7 @@ export default function App() {
     setErrorMsg('')
 
     try {
-      const API_BASE = import.meta.env.VITE_API_URL || ''
-      const response = await fetch(`${API_BASE}/api/travel`, {
+      const response = await fetch('/api/travel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: prompt, thread_id: threadId }),

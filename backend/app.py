@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from main import run_travel_agent
+from backend.main import run_travel_agent
 
 app = FastAPI(
     title="TripMate AI",

@@ -1,3 +1,4 @@
+import os
 import traceback
 
 import uvicorn
@@ -5,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from main import run_travel_agent
+from backend.main import run_travel_agent
 
 app = FastAPI(
     title="TripMate AI",
@@ -17,18 +18,35 @@ app = FastAPI(
 # proxy avoids needing this in local dev, but CORS is required as soon as
 # the frontend is deployed on a different origin than this API (e.g.
 # Vercel/Netlify frontend + Render/Fly backend).
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+# Add your deployed frontend origin(s) via env var, comma-separated, e.g.:
+#   FRONTEND_ORIGINS=https://waypoint-frontend.vercel.app,https://mytrip.app
+_extra_origins = os.getenv("FRONTEND_ORIGINS", "")
+ALLOWED_ORIGINS += [o.strip() for o in _extra_origins.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        # Add your deployed frontend origin here, e.g.:
-        # "https://waypoint-frontend.vercel.app",
-    ],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/")
+async def root():
+    # This backend only exposes a JSON API (see /health and /api/travel).
+    # Hitting this bare URL previously returned FastAPI's default
+    # {"detail": "Not Found"} because no root route existed.
+    return {
+        "message": "TripMate AI backend is running.",
+        "endpoints": ["/health", "/api/travel (POST)"],
+        "docs": "/docs",
+    }
 
 
 class TravelRequest(BaseModel):

@@ -413,7 +413,9 @@ def parse_route(query: str):
         arr_iata = resolve_location_to_iata(mentions[0])
         return DEFAULT_ORIGIN_IATA, arr_iata
 
-  
+    # Fallback: ensure a consistent tuple is always returned
+    return None, None
+
 
 
 def format_flight(flight: dict):

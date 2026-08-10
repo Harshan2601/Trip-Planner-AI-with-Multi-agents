@@ -7,15 +7,16 @@ import os
 import re
 import nltk
 from nltk.corpus import stopwords
+import requests
 load_dotenv()
 
-os.environ("SSL_CERT_FILE")=certifi.where()
-os.environ("REQUESTS_CA_BUNDLE")=certifi.where()
+os.environ["SSL_CERT_FILE"]= certifi.where()
+os.environ["REQUESTS_CA_BUNDLE"]= certifi.where()
 
-API_KEY=os.getenv("ac8e83f13ce427112a1bf4099b059fc")
-DEFAULT_ORIGIN_DATA=os.getenv("DEFALUT_ORIGIN","GERMANY")
+API_KEY=os.getenv("AVIATION_STACK_API")
+DEFAULT_ORIGIN_IATA=os.getenv("DEFAULT_ORIGIN","FRA")
 
-BASE_URL=https://api.aviationstack.com/v1/flights
+BASE_URL="https://api.aviationstack.com/v1/flights"
 
 AIRPORTS=airportsdata.load("IATA")
 
@@ -412,7 +413,7 @@ def parse_route(query: str):
         arr_iata = resolve_location_to_iata(mentions[0])
         return DEFAULT_ORIGIN_IATA, arr_iata
 
-    return None, None
+  
 
 
 def format_flight(flight: dict):

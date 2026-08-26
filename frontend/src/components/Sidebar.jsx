@@ -13,9 +13,8 @@ import {
   Compass,
 } from 'lucide-react'
 
-function renderLine(line, key) {
-  const isHeading = /^\d+\.\s/.test(line.trim())
-  const parts = line.split(/(\*\*[^*]+\*\*)/g).map((chunk, i) =>
+function renderInline(text) {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((chunk, i) =>
     chunk.startsWith('**') && chunk.endsWith('**') ? (
       <strong key={i} className="font-semibold text-night">
         {chunk.slice(2, -2)}
@@ -24,20 +23,97 @@ function renderLine(line, key) {
       chunk
     )
   )
+}
 
-  if (isHeading) {
+function renderLine(line, key) {
+  const trimmed = line.trim()
+  const heading = trimmed.match(/^#{1,6}\s+(.+)$/)
+  const isNumberedHeading = /^\d+\.\s/.test(trimmed)
+
+  if (heading || isNumberedHeading) {
     return (
       <h3 key={key} className="mt-4 font-display text-base font-medium text-night first:mt-0">
-        {parts}
+        {renderInline(heading ? heading[1] : trimmed)}
       </h3>
     )
   }
-  if (line.trim() === '') return null
+  if (trimmed === '') return null
   return (
     <p key={key} className="mt-1.5 text-[13px] leading-relaxed text-night/75">
-      {parts}
+      {renderInline(trimmed.replace(/^[-*]\s+/, '• '))}
     </p>
   )
+}
+
+function isTableSeparator(line) {
+  return /^\s*\|?[\s:-]+(?:\|[\s:-]+)+\|?\s*$/.test(line)
+}
+
+function parseTableRow(line) {
+  return line
+    .trim()
+    .replace(/^\|/, '')
+    .replace(/\|$/, '')
+    .split('|')
+    .map((cell) => cell.trim())
+}
+
+function renderAnswer(answer) {
+  const lines = answer.split(/\r?\n/)
+  const output = []
+  let index = 0
+
+  while (index < lines.length) {
+    if (index + 1 < lines.length && lines[index].includes('|') && isTableSeparator(lines[index + 1])) {
+      const headers = parseTableRow(lines[index])
+      const rows = []
+      index += 2
+
+      while (index < lines.length && lines[index].trim() && lines[index].includes('|')) {
+        rows.push(parseTableRow(lines[index]))
+        index += 1
+      }
+
+      output.push(
+        <div key={`table-${index}`} className="mt-3 overflow-hidden rounded-lg border border-night/15">
+          <table className="w-full border-collapse text-left text-[11px]">
+            <thead className="bg-night/5">
+              <tr>
+                {headers.map((header, cellIndex) => (
+                  <th
+                    key={cellIndex}
+                    className="border-b border-night/15 px-2 py-1.5 font-semibold text-night"
+                  >
+                    {renderInline(header)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, rowIndex) => (
+                <tr key={rowIndex} className="even:bg-night/[0.025]">
+                  {headers.map((_, cellIndex) => (
+                    <td
+                      key={cellIndex}
+                      className="border-b border-night/10 px-2 py-1.5 align-top text-night/75 last:border-b-0"
+                    >
+                      {renderInline(row[cellIndex] || '')}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>,
+      )
+      continue
+    }
+
+    output.push(renderLine(lines[index], index))
+    index += 1
+  }
+
+  return output
 }
 
 function RawSection({ title, Icon, content }) {
@@ -184,7 +260,7 @@ export default function Sidebar({ result, status }) {
                   </span>
                 </div>
                 <div className="mt-2">
-                  {result.answer.split('\n').map((line, i) => renderLine(line, i))}
+                  {renderAnswer(result.answer)}
                 </div>
               </div>
 

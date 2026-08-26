@@ -25,6 +25,7 @@ from tools.flight_tool import search_flights
 load_dotenv()
 
 os.environ["SSL_CERT_FILE"] = certifi.where()
+
 os.environ["REQUESTS_CA_BUNDLE"] = certifi.where()
 
 

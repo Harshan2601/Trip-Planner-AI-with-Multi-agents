@@ -11,4 +11,4 @@ services:
       - key: DATABASE_URL
         sync: false
       - key: FRONTEND_ORIGIN
-        sync: false
+        value: https://waypoint2601.netlify.app

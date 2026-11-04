@@ -4,7 +4,7 @@
   publish = "dist"
 
 [build.environment]
-  VITE_API_URL = "https://trip-planner-ai-with-multi-agents-0mbi.onrender.com"
+  VITE_API_URL = "https://trip-planner-ai-with-multi-agents-2.onrender.com"
 
 [[redirects]]
   from = "/*"
